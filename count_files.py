@@ -1,6 +1,7 @@
 """ 
-A program to count the total number of files in a given directory,
-it may have sub directories as well.
+A program to count the total number of files/directories in a 
+given directory, it may have sub directories as well, 
+hidden file/directories are counted.
 """
 
 import os
@@ -12,21 +13,9 @@ class CountFilesAndFolders():
     def __init__(self, file_path):
         """Setting attributes."""
         self.file_path = file_path
-        self.file_names = []
-        self.folder_names = []
-
-    def display_files(self):
-        """Displays all files in the list passed in"""
-        if self.file_names:
-            for file_name in self.file_names:
-                print(file_name)
-
-    def display_folders(self):
-        """Displays all folders in the list passed in."""
-        if self.folder_names:
-            for folder_name in self.folder_names:
-                print(folder_name)
-    
+        self.file_count = 0
+        self.folder_count = 0
+            
     def generate_path(self, start_path, file_name):
         """Generate a path to get to the folder."""
         current_path = None
@@ -48,7 +37,6 @@ class CountFilesAndFolders():
                 files_or_folders = os.listdir(file_path)
             except PermissionError:
                 pass
-                #print("Access not granted, could not access " + file_path)
             else:
                 if files_or_folders:
                     for file_or_folder in files_or_folders:
@@ -56,24 +44,24 @@ class CountFilesAndFolders():
                         file_or_folder = self.generate_path(file_path, file_or_folder) 
                         # Checking for files.
                         if os.path.isfile(file_or_folder):
-                            if file_or_folder not in self.file_names: 
-                                self.file_names.append(file_or_folder)
+                            self.file_count += 1
                         # Checking for folder.
                         elif os.path.isdir(file_or_folder):
-                            if file_or_folder not in self.folder_names: 
-                                # ignoring .git folders.
-                                if os.path.basename(file_or_folder) != ".git":
-                                    self.folder_names.append(file_or_folder)
-                                    folders.append(file_or_folder)
+                            # ignoring .git folders.
+                            if os.path.basename(file_or_folder) != ".git":
+                                #self.folder_names.append(file_or_folder)
+                                self.folder_count += 1
+                                folders.append(file_or_folder)
         # Gathering all folders and files in all sub directories.
         if folders:
             for folder in folders:
                 self.gather(folder)
              
     def print_total(self):
-       """Print total number of files and folders."""
-       print("Total files: " + str(len(self.file_names)))
-       print("Total folders: " + str(len(self.folder_names)))
+        """Print total number of files and folders."""
+        print("Total files: " + str(self.file_count))
+        print("Total folders: " + str(self.folder_count))
+
 
 def confirm_validity(file_path):
     """Confirms the folder exists and is a directory"""
