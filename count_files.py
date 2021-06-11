@@ -10,7 +10,6 @@ class CountFilesAndFolders():
     
     def __init__(self, file_path):
         self.file_path = file_path
-        file_path = "/home/max/Desktop/python_work/"
         self.file_names = []
         self.folder_names = []
 
@@ -26,32 +25,37 @@ class CountFilesAndFolders():
             for folder_name in self.folder_names:
                 print(folder_name)
     
-    def generate_path(self, file_name):
+    def generate_path(self, start_path, file_name):
         """Generate a path to get to the folder."""
-        if file_name:
-            os.path.join(self.file_path + "file_name")
+        current_path = None
 
-        pass
+        if file_name and start_path:
+            current_path = start_path + file_name
+        return current_path
 
-    def gather(self):
+    def gather(self, file_path):
         """Gathers all files and directory of a given a valid folder."""
         
-        if os.path.isdir(self.file_path):
-            files_or_folders = os.listdir(self.file_path)
+        if os.path.isdir(file_path):
+            files_or_folders = os.listdir(file_path)
         if files_or_folders:
             for file_or_folder in files_or_folders:
+                # Generating current file path              
+                file_or_folder = self.generate_path(file_path, file_or_folder) 
                 # Checking for files
                 if os.path.isfile(file_or_folder):
                     if file_or_folder not in self.file_names: 
                         self.file_names.append(file_or_folder)
-                        print(file_or_folder)
                 # Checking for folder
                 elif os.path.isdir(file_or_folder):
                     if file_or_folder not in self.folder_names: 
                         self.folder_names.append(file_or_folder)
 
-    print("Files: ")
-    display_files(file_names)
-    print("\n")
-    print("Folders: ")
-    display_folders(folder_names)
+file_path = "/home/max/Desktop/python_work/"
+test = CountFilesAndFolders(file_path)
+test.gather(test.file_path)
+print("Files: ")
+test.display_files()
+print("\n")
+print("Folders: ")
+test.display_folders()
