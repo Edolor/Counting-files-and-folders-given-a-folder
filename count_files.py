@@ -16,46 +16,13 @@ class CountFilesAndFolders():
         self.file_count = 0
         self.folder_count = 0
             
-    def generate_path(self, start_path, file_name):
-        """Generate a path to get to the folder."""
-        current_path = None
-
-        if file_name and start_path:
-            if not start_path.endswith("/"):
-                current_path = start_path + "/" + file_name
-            else:
-                current_path = start_path + file_name
-        return current_path
-
-    def gather(self, file_path):
+    def gather(self):
         """Gathers all files and directory of a given a valid folder."""
-        files_or_folders = None
-        folders = []
-
-        if os.path.isdir(file_path):
-            try:
-                files_or_folders = os.listdir(file_path)
-            except PermissionError:
-                pass
-            else:
-                if files_or_folders:
-                    for file_or_folder in files_or_folders:
-                        # Generating current file path.
-                        file_or_folder = self.generate_path(file_path, file_or_folder) 
-                        # Checking for files.
-                        if os.path.isfile(file_or_folder):
-                            self.file_count += 1
-                        # Checking for folder.
-                        elif os.path.isdir(file_or_folder):
-                            # ignoring .git folders.
-                            if os.path.basename(file_or_folder) != ".git":
-                                #self.folder_names.append(file_or_folder)
-                                self.folder_count += 1
-                                folders.append(file_or_folder)
-        # Gathering all folders and files in all sub directories.
-        if folders:
-            for folder in folders:
-                self.gather(folder)
+       
+        for current_file, sub_folders, file_names in os.walk(self.file_path):
+            if ".git" not in current_file:
+                self.file_count += len(file_names)
+                self.folder_count += len(sub_folders)
              
     def print_total(self):
         """Print total number of files and folders."""
@@ -75,13 +42,14 @@ def confirm_validity(file_path):
 def count():
     """
     Create an object of the class CountFilesAndFolders and proceed
-    to count the files after prompting for a file path."""
+    to count the files after prompting for a file path.
+    """
     
     if len(sys.argv) < 2:
         file_path = input("Enter a file path: ").strip()
         if confirm_validity(file_path):
             test = CountFilesAndFolders(file_path)
-            test.gather(test.file_path)
+            test.gather()
             test.print_total()
         else:
             print("File path not valid")
@@ -89,7 +57,7 @@ def count():
         file_path = str(sys.argv[1])
         if confirm_validity(file_path):
             test = CountFilesAndFolders(file_path)
-            test.gather(test.file_path)
+            test.gather()
             test.print_total()
         else:
             print("File path not valid")
